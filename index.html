@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valencia Basket | Registros Históricos</title>
+  <style>
+    :root {
+      --naranja: #f47c20;
+      --naranja-oscuro: #cc5f0f;
+      --rojo-pamesa: #b81f24;
+      --rojo-oscuro: #8f171b;
+      --blanco: #fffaf5;
+      --crema: #fff0dd;
+      --texto: #2b1a12;
+      --sombra: 0 12px 30px rgba(0, 0, 0, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--texto);
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05)),
+        linear-gradient(90deg, rgba(184,31,36,0.95) 0 50%, rgba(255,248,244,0.95) 50% 100%);
+      background-size: 100% 100%, 90px 90px;
+      background-position: center, center;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.16) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255,255,255,0.16) 2px, transparent 2px);
+      background-size: 90px 90px;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    .wrap {
+      width: min(1100px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(244,124,32,0.98), rgba(204,95,15,0.98));
+      border: 4px solid rgba(255,255,255,0.75);
+      border-radius: 28px;
+      box-shadow: var(--sombra);
+      padding: 28px;
+      color: white;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "🏀";
+      position: absolute;
+      right: 18px;
+      top: 10px;
+      font-size: 92px;
+      opacity: 0.12;
+      transform: rotate(-12deg);
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 1.05rem;
+      max-width: 760px;
+      line-height: 1.5;
+    }
+
+    .search-box {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+
+    input {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 18px 20px;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,0.28);
+    }
+
+    button {
+      border: 0;
+      border-radius: 18px;
+      background: var(--rojo-pamesa);
+      color: white;
+      padding: 16px 24px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--sombra);
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      background: var(--rojo-oscuro);
+      transform: translateY(-2px);
+    }
+
+    .panel {
+      background: rgba(255, 248, 242, 0.95);
+      border: 4px solid rgba(184,31,36,0.22);
+      border-radius: 26px;
+      padding: 22px;
+      box-shadow: var(--sombra);
+      backdrop-filter: blur(4px);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .player-name {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      color: var(--rojo-pamesa);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .hint {
+      margin: 0;
+      color: #6a4637;
+      font-size: 0.98rem;
+    }
+
+    .records-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 10px;
+    }
+
+    .tile {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,240,221,0.96)),
+        linear-gradient(135deg, #ffffff, #ffe4c2);
+      border: 5px solid var(--naranja);
+      border-radius: 24px;
+      padding: 20px 18px;
+      min-height: 220px;
+      box-shadow: 0 10px 24px rgba(184,31,36,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(184,31,36,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(184,31,36,0.07) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+    }
+
+    .tile-surname {
+      position: relative;
+      z-index: 1;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--rojo-pamesa);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+
+    .tile-number {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1;
+      color: var(--naranja-oscuro);
+      margin-bottom: 14px;
+      word-break: break-word;
+    }
+
+    .tile-category {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      background: var(--rojo-pamesa);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .players-list {
+      margin-top: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      background: rgba(184,31,36,0.1);
+      color: var(--rojo-oscuro);
+      border: 2px solid rgba(184,31,36,0.16);
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .chip:hover {
+      background: rgba(244,124,32,0.18);
+      transform: translateY(-1px);
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 0.9rem;
+      color: #6a4637;
+      line-height: 1.5;
+    }
+
+    .empty {
+      padding: 28px;
+      text-align: center;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.7);
+      border: 3px dashed rgba(184,31,36,0.28);
+      color: #6a4637;
+      font-weight: 700;
+    }
+
+    @media (max-width: 700px) {
+      .search-box {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .tile {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Registros Históricos Valencia Basket</h1>
+      <p class="subtitle">
+        Escribe el nombre o apellido de un jugador del histórico taronja y la app te mostrará sus mejores marcas en la sección de líderes. Estética naranja, alma Pamesa y cero dramas: aquí manda el dato.
+      </p>
+      <div class="search-box">
+        <input id="playerInput" type="text" placeholder="Ej.: Dubljevic, Rafa Martínez, Luengo..." />
+        <button id="searchBtn">Buscar registro</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="result-header">
+        <div>
+          <h2 class="player-name" id="playerTitle">Bojan Dubljevic</h2>
+          <p class="hint" id="playerHint">Selecciona un jugador o pulsa uno de los nombres sugeridos.</p>
+        </div>
+      </div>
+
+      <div id="results" class="records-grid"></div>
+
+      <div class="players-list" id="playersList"></div>
+
+      <p class="footer-note">
+        Datos cargados a partir de la página de líderes históricos de Valencia Basket en acb.com. Puedes ampliar o editar el objeto <strong>playersData</strong> si quieres añadir más categorías, temporadas o fichas individuales.
+      </p>
+    </section>
+  </div>
+
+  <script>
+    const playersData = {
+      "Víctor Luengo": [
+        { category: "Partidos jugados", value: "465", surname: "Luengo" },
+        { category: "Recuperaciones", value: "410", surname: "Luengo" },
+        { category: "Faltas cometidas", value: "1.094", surname: "Luengo" },
+        { category: "Rebotes", value: "798", surname: "Luengo" },
+        { category: "Asistencias", value: "592", surname: "Luengo" },
+        { category: "Tapones", value: "111", surname: "Luengo" },
+        { category: "Minutos jugados", value: "8.227,25", surname: "Luengo" },
+        { category: "Faltas recibidas", value: "834", surname: "Luengo" },
+        { category: "Pérdidas", value: "505", surname: "Luengo" },
+        { category: "Mates", value: "78", surname: "Luengo" }
+      ],
+      "Bojan Dubljevic": [
+        { category: "Valoración", value: "5.200", surname: "Dubljevic" },
+        { category: "Puntos", value: "4.358", surname: "Dubljevic" },
+        { category: "Rebotes", value: "2.074", surname: "Dubljevic" },
+        { category: "Tiros libres", value: "888", surname: "Dubljevic" },
+        { category: "Rebotes defensivos", value: "1.377", surname: "Dubljevic" },
+        { category: "Rebotes ofensivos", value: "697", surname: "Dubljevic" },
+        { category: "Faltas recibidas", value: "1.240", surname: "Dubljevic" },
+        { category: "Pérdidas", value: "690", surname: "Dubljevic" },
+        { category: "Partidos jugados", value: "374", surname: "Dubljevic" },
+        { category: "Recuperaciones", value: "270", surname: "Dubljevic" },
+        { category: "Minutos jugados", value: "8.010,48", surname: "Dubljevic" },
+        { category: "Tiros de 3", value: "388", surname: "Dubljevic" },
+        { category: "Tiros de 2", value: "1.153", surname: "Dubljevic" },
+        { category: "Faltas cometidas", value: "744", surname: "Dubljevic" }
+      ],
+      "Rafa Martínez": [
+        { category: "Minutos jugados", value: "8.600,77", surname: "Martínez" },
+        { category: "Tiros de 3", value: "624", surname: "Martínez" },
+        { category: "Partidos jugados", value: "373", surname: "Martínez" },
+        { category: "Valoración", value: "3.588", surname: "Martínez" },
+        { category: "Puntos", value: "3.625", surname: "Martínez" },
+        { category: "Asistencias", value: "710", surname: "Martínez" },
+        { category: "Recuperaciones", value: "263", surname: "Martínez" },
+        { category: "Tiros libres", value: "813", surname: "Martínez" },
+        { category: "Faltas recibidas", value: "1.103", surname: "Martínez" },
+        { category: "Faltas cometidas", value: "802", surname: "Martínez" },
+        { category: "Pérdidas", value: "512", surname: "Martínez" }
+      ],
+      "José Luis Rodilla": [
+        { category: "Partidos jugados", value: "297", surname: "Rodilla" },
+        { category: "Valoración", value: "3.358", surname: "Rodilla" },
+        { category: "Puntos", value: "3.004", surname: "Rodilla" },
+        { category: "Asistencias", value: "680", surname: "Rodilla" },
+        { category: "Recuperaciones", value: "318", surname: "Rodilla" },
+        { category: "Minutos jugados", value: "8.454,38", surname: "Rodilla" },
+        { category: "Tiros de 3", value: "254", surname: "Rodilla" },
+        { category: "Tiros de 2", value: "710", surname: "Rodilla" },
+        { category: "Tiros libres", value: "822", surname: "Rodilla" },
+        { category: "Rebotes defensivos", value: "606", surname: "Rodilla" },
+        { category: "Faltas recibidas", value: "951", surname: "Rodilla" },
+        { category: "Pérdidas", value: "364", surname: "Rodilla" }
+      ],
+      "Víctor Claver": [
+        { category: "Partidos jugados", value: "232", surname: "Claver" },
+        { category: "Mates", value: "78", surname: "Claver" }
+      ],
+      "Brad Branson": [
+        { category: "Valoración", value: "3.730", surname: "Branson" },
+        { category: "Puntos", value: "3.647", surname: "Branson" },
+        { category: "Rebotes", value: "1.620", surname: "Branson" },
+        { category: "Tapones", value: "219", surname: "Branson" },
+        { category: "Minutos jugados", value: "6.726,2", surname: "Branson" },
+        { category: "Tiros de 2", value: "1.407", surname: "Branson" },
+        { category: "Tiros libres", value: "629", surname: "Branson" },
+        { category: "Rebotes defensivos", value: "1.138", surname: "Branson" },
+        { category: "Rebotes ofensivos", value: "482", surname: "Branson" },
+        { category: "Faltas cometidas", value: "650", surname: "Branson" }
+      ],
+      "Bernard Hopkins": [
+        { category: "Valoración", value: "3.513", surname: "Hopkins" },
+        { category: "Puntos", value: "2.830", surname: "Hopkins" },
+        { category: "Rebotes", value: "1.347", surname: "Hopkins" },
+        { category: "Tiros de 2", value: "1.106", surname: "Hopkins" },
+        { category: "Tiros libres", value: "588", surname: "Hopkins" },
+        { category: "Rebotes defensivos", value: "815", surname: "Hopkins" },
+        { category: "Rebotes ofensivos", value: "532", surname: "Hopkins" },
+        { category: "Faltas recibidas", value: "819", surname: "Hopkins" },
+        { category: "Faltas cometidas", value: "586", surname: "Hopkins" },
+        { category: "Pérdidas", value: "349", surname: "Hopkins" }
+      ],
+      "Laurent Micheaux": [
+        { category: "Rebotes", value: "1.039", surname: "Micheaux" },
+        { category: "Tapones", value: "94", surname: "Micheaux" },
+        { category: "Tiros de 2", value: "718", surname: "Micheaux" },
+        { category: "Rebotes defensivos", value: "769", surname: "Micheaux" },
+        { category: "Mates", value: "82", surname: "Micheaux" }
+      ],
+      "Salva Díez": [
+        { category: "Asistencias", value: "890", surname: "Díez" },
+        { category: "Recuperaciones", value: "345", surname: "Díez" }
+      ],
+      "Sam Van Rossom": [
+        { category: "Asistencias", value: "756", surname: "Van Rossom" },
+        { category: "Tiros de 3", value: "316", surname: "Van Rossom" }
+      ],
+      "David Alston": [
+        { category: "Tapones", value: "143", surname: "Alston" }
+      ],
+      "Fabricio Oberto": [
+        { category: "Tapones", value: "100", surname: "Oberto" }
+      ],
+      "B. Álvarez": [
+        { category: "Tiros de 3", value: "250", surname: "Álvarez" }
+      ],
+      "Dejan Tomasevic": [
+        { category: "Rebotes ofensivos", value: "299", surname: "Tomasevic" }
+      ],
+      "Jaime Pradilla": [
+        { category: "Rebotes ofensivos", value: "274", surname: "Pradilla" }
+      ],
+      "Mike Tobey": [
+        { category: "Mates", value: "156", surname: "Tobey" }
+      ],
+      "A. Swinson": [
+        { category: "Mates", value: "142", surname: "Swinson" }
+      ],
+      "Serhiy Lishchuk": [
+        { category: "Mates", value: "78", surname: "Lishchuk" }
+      ]
+    };
+
+    const aliases = {
+      "luengo": "Víctor Luengo",
+      "victor luengo": "Víctor Luengo",
+      "dubljevic": "Bojan Dubljevic",
+      "bojan": "Bojan Dubljevic",
+      "bojan dubljevic": "Bojan Dubljevic",
+      "rafa": "Rafa Martínez",
+      "rafa martinez": "Rafa Martínez",
+      "martinez": "Rafa Martínez",
+      "r. martinez": "Rafa Martínez",
+      "rodilla": "José Luis Rodilla",
+      "jose luis rodilla": "José Luis Rodilla",
+      "j. rodilla": "José Luis Rodilla",
+      "claver": "Víctor Claver",
+      "victor claver": "Víctor Claver",
+      "branson": "Brad Branson",
+      "brad branson": "Brad Branson",
+      "hopkins": "Bernard Hopkins",
+      "b. hopkins": "Bernard Hopkins",
+      "bernard hopkins": "Bernard Hopkins",
+      "micheaux": "Laurent Micheaux",
+      "laurent micheaux": "Laurent Micheaux",
+      "salva diez": "Salva Díez",
+      "diez": "Salva Díez",
+      "s. van rossom": "Sam Van Rossom",
+      "van rossom": "Sam Van Rossom",
+      "sam van rossom": "Sam Van Rossom",
+      "alston": "David Alston",
+      "d. alston": "David Alston",
+      "oberto": "Fabricio Oberto",
+      "fabricio oberto": "Fabricio Oberto",
+      "b. alvarez": "B. Álvarez",
+      "alvarez": "B. Álvarez",
+      "tomasevic": "Dejan Tomasevic",
+      "dejan tomasevic": "Dejan Tomasevic",
+      "pradilla": "Jaime Pradilla",
+      "jaime pradilla": "Jaime Pradilla",
+      "tobey": "Mike Tobey",
+      "mike tobey": "Mike Tobey",
+      "swinson": "A. Swinson",
+      "a. swinson": "A. Swinson",
+      "lishchuk": "Serhiy Lishchuk",
+      "serhiy lishchuk": "Serhiy Lishchuk"
+    };
+
+    const input = document.getElementById('playerInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const results = document.getElementById('results');
+    const playerTitle = document.getElementById('playerTitle');
+    const playerHint = document.getElementById('playerHint');
+    const playersList = document.getElementById('playersList');
+
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+    }
+
+    function findPlayer(query) {
+      const clean = normalizeText(query);
+      if (!clean) return 'Bojan Dubljevic';
+      if (aliases[clean]) return aliases[clean];
+
+      const exact = Object.keys(playersData).find(name => normalizeText(name) === clean);
+      if (exact) return exact;
+
+      const partial = Object.keys(playersData).find(name => normalizeText(name).includes(clean) || clean.includes(normalizeText(name)));
+      return partial || null;
+    }
+
+    function renderPlayer(player) {
+      const data = playersData[player];
+      if (!data) {
+        playerTitle.textContent = 'Jugador no encontrado';
+        playerHint.textContent = 'Prueba con Luengo, Dubljevic, Rafa Martínez, Rodilla, Van Rossom, Tobey...';
+        results.innerHTML = '<div class="empty">No tengo ese jugador en la base de datos cargada. Revisa el nombre o añade más registros al objeto playersData.</div>';
+        return;
+      }
+
+      playerTitle.textContent = player;
+      playerHint.textContent = `Se han encontrado ${data.length} registro(s) histórico(s) para ${player}.`;
+
+      results.innerHTML = data.map(record => `
+        <article class="tile">
+          <div class="tile-surname">${record.surname}</div>
+          <div class="tile-number">${record.value}</div>
+          <div class="tile-category">${record.category}</div>
+        </article>
+      `).join('');
+    }
+
+    function handleSearch() {
+      const player = findPlayer(input.value);
+      renderPlayer(player);
+    }
+
+    function renderChips() {
+      const sortedPlayers = Object.keys(playersData).sort((a, b) => a.localeCompare(b, 'es'));
+      playersList.innerHTML = sortedPlayers.map(player => `
+        <button class="chip" data-player="${player}">${player}</button>
+      `).join('');
+
+      playersList.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const player = chip.dataset.player;
+          input.value = player;
+          renderPlayer(player);
+        });
+      });
+    }
+
+    searchBtn.addEventListener('click', handleSearch);
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') handleSearch();
+    });
+
+    renderChips();
+    renderPlayer('Bojan Dubljevic');
+  </script>
+</body>
+</html>
