@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valencia Basket - Hall of Fame</title>
+    <style>
+        :root {
+            --valencia-orange: #FF6600;
+            --pamesa-red: #D32F2F;
+            --pamesa-white: #FFFFFF;
+            --text-dark: #333;
+        }
+
+        body {
+            font-family: 'Arial Black', 'Helvetica Bold', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            /* FONDO DE AZULEJOS ROJOS Y BLANCOS ESTILO PAMESA RETRO */
+            background-color: var(--pamesa-white);
+            background-image: 
+                linear-gradient(45deg, var(--pamesa-red) 25%, transparent 25%), 
+                linear-gradient(-45deg, var(--pamesa-red) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, var(--pamesa-red) 75%),
+                linear-gradient(-45deg, transparent 75%, var(--pamesa-red) 75%);
+            background-size: 60px 60px;
+            background-position: 0 0, 0 30px, 30px -30px, -30px 0px;
+        }
+
+        .header {
+            background-color: rgba(255, 102, 0, 0.9); /* Naranja con transparencia */
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border-bottom: 5px solid var(--pamesa-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .header h1 { margin: 0; font-size: 2rem; }
+        .header p { margin: 5px 0 0; font-size: 1rem; }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        /* ESTILO DEL SELECTOR (NARANJA) */
+        .controls {
+            background-color: var(--valencia-orange);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            width: 100%;
+            margin-bottom: 30px;
+            border: 3px solid #fff;
+        }
+
+        label {
+            color: white;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: none;
+            background-color: white;
+            color: var(--text-dark);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* ESTILO DEL AZULEJO DE RESULTADO (GRANDE) */
+        .tile-result {
+            display: none; /* Oculto al principio */
+            background-color: white;
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Cuadrado perfecto */
+            max-width: 400px;
+            border: 15px solid var(--valencia-orange); /* Marco naranja */
+            border-radius: 5px;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.2); /* Sombra dura retro */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Efecto de brillo de azulejo */
+        .tile-result::after {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px;
+            width: 30px; height: 30px;
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 50%;
+        }
+
+        .tile-player {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            color: var(--pamesa-red);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .tile-number {
+            font-size: 6rem;
+            color: var(--valencia-orange);
+            margin: 10px 0;
+            line-height: 1;
+            text-shadow: 4px 4px 0 var(--text-dark);
+        }
+
+        .tile-discipline {
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            color: var(--text-dark);
+            background-color: #eee;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin: 0;
+        }
+        
+        @media (max-width: 480px) {
+            .tile-player { font-size: 1.8rem; }
+            .tile-number { font-size: 4rem; }
+            .tile-discipline { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>HALL OF FAME</h1>
+        <p>Valencia Basket - Registros Históricos</p>
+    </div>
+
+    <div class="main-container">
+        <div class="controls">
+            <label for="recordSelect">Selecciona un Récord Histórico:</label>
+            <select id="recordSelect" onchange="mostrarRecord()">
+                <option value="">-- Elige una disciplina --</option>
+                
+                <optgroup label="Puntos">
+                    <option value="puntos_1">1º Bojan Dubljevic</option>
+                    <option value="puntos_2">2º Rafa Martínez</option>
+                    <option value="puntos_3">3º Bernard Hopkins</option>
+                    <option value="puntos_4">4º Nacho Rodilla</option>
+                    <option value="puntos_5">5º Víctor Luengo</option>
+                </optgroup>
+
+                <optgroup label="Rebotes">
+                    <option value="rebotes_1">1º Bojan Dubljevic</option>
+                    <option value="rebotes_2">2º Bernard Hopkins</option>
+                    <option value="rebotes_3">3º Deon Thompson</option>
+                    <option value="rebotes_4">4º Justin Hamilton</option>
+                    <option value="rebotes_5">5º John Williams</option>
+                </optgroup>
+
+                <optgroup label="Asistencias">
+                    <option value="asistencias_1">1º Salva Díez</option>
+                    <option value="asistencias_2">2º Nacho Rodilla</option>
+                    <option value="asistencias_3">3º Rafa Martínez</option>
+                    <option value="asistencias_4">4º Sam Van Rossom</option>
+                    <option value="asistencias_5">5º Guillem Vives</option>
+                </optgroup>
+                
+                </select>
+        </div>
+
+        <div id="tileResult" class="tile-result">
+            <p id="playerApellido" class="tile-player">APELLIDO</p>
+            <p id="statCifra" class="tile-number">000</p>
+            <p id="statDisciplina" class="tile-discipline">DISCIPLINA</p>
+        </div>
+    </div>
+
+    <script>
+        // BASE DE DATOS DE LOS LÍDERES HISTÓRICOS (Sacados de la web)
+        // Puedes completar esta lista siguiendo el mismo formato.
+        const dbRecords = {
+            // PUNTOS
+            'puntos_1': { apellido: 'Dubljevic', cifra: '4.358', disciplina: 'Puntos Anotados' },
+            'puntos_2': { apellido: 'Martínez', cifra: '3.625', disciplina: 'Puntos Anotados' },
+            'puntos_3': { apellido: 'Hopkins', cifra: '3.125', disciplina: 'Puntos Anotados' },
+            'puntos_4': { apellido: 'Rodilla', cifra: '3.004', disciplina: 'Puntos Anotados' },
+            'puntos_5': { apellido: 'Luengo', cifra: '2.839', disciplina: 'Puntos Anotados' },
+
+            // REBOTES
+            'rebotes_1': { apellido: 'Dubljevic', cifra: '2.074', disciplina: 'Rebotes Totales' },
+            'rebotes_2': { apellido: 'Hopkins', cifra: '1.407', disciplina: 'Rebotes Totales' },
+            'rebotes_3': { apellido: 'Thompson', cifra: '1.111', disciplina: 'Rebotes Totales' },
+            'rebotes_4': { apellido: 'Hamilton', cifra: '1.099', disciplina: 'Rebotes Totales' },
+            'rebotes_5': { apellido: 'Williams', cifra: '998', disciplina: 'Rebotes Totales' },
+
+            // ASISTENCIAS
+            'asistencias_1': { apellido: 'Díez', cifra: '890', disciplina: 'Asistencias' },
+            'asistencias_2': { apellido: 'Rodilla', cifra: '680', disciplina: 'Asistencias' },
+            'asistencias_3': { apellido: 'Martínez', cifra: '710', disciplina: 'Asistencias' }, // Nota: En la web sale Martínez 3º aunque Rodilla tiene menos, revisa los datos de la web si quieres precisión exacta año a año
+            'asistencias_4': { apellido: 'Van Rossom', cifra: '665', disciplina: 'Asistencias' },
+            'asistencias_5': { apellido: 'Vives', cifra: '554', disciplina: 'Asistencias' }
+            
+            // AÑADE AQUÍ MÁS DATOS SIGUIENDO EL FORMATO:
+            // 'triples_1': { apellido: 'Martínez', cifra: '624', disciplina: 'Triples' },
+        };
+
+        function mostrarRecord() {
+            const select = document.getElementById('recordSelect');
+            const tile = document.getElementById('tileResult');
+            const key = select.value;
+
+            if (key && dbRecords[key]) {
+                const data = dbRecords[key];
+                
+                // Rellenar el azulejo
+                document.getElementById('playerApellido').innerText = data.apellido;
+                document.getElementById('statCifra').innerText = data.cifra;
+                document.getElementById('statDisciplina').innerText = data.disciplina;
+
+                // Mostrar azulejo con animación simple
+                tile.style.display = 'flex';
+                tile.style.animation = 'none';
+                setTimeout(() => {
+                    tile.style.animation = 'popIn 0.3s ease-out';
+                }, 10);
+
+            } else {
+                tile.style.display = 'none';
+            }
+        }
+    </script>
+    
+    <style>
+        /* Animación para que el azulejo aparezca con fuerza */
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+
+</body>
+</html>
